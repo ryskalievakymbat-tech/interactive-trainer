@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#173b55">
+<title>ПАУЗА — эмоциональный навигатор</title>
+<style>
+:root{
+ --navy:#173b55;--navy2:#234f68;--teal:#2d9288;--teal-soft:#e7f4f1;
+ --gold:#e4b75e;--ink:#233746;--muted:#647887;--paper:#f3f7f8;
+ --white:#fff;--line:#dce6e8;--blue-soft:#eaf1f6;--rose:#f8eded;
+ --shadow:0 12px 32px rgba(23,59,85,.08);--radius:20px
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.shell{max-width:1120px;margin:auto;padding:0 22px}
+.hero{background:radial-gradient(circle at 86% 12%,rgba(228,183,94,.22),transparent 25%),linear-gradient(120deg,#173b55,#245e70);color:white;padding:34px 0 28px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:280px;height:280px;border:1px solid rgba(255,255,255,.12);border-radius:50%;right:-90px;bottom:-180px;box-shadow:0 0 0 28px rgba(255,255,255,.035),0 0 0 58px rgba(255,255,255,.025)}
+.brand{display:flex;align-items:center;gap:16px;position:relative;z-index:1}
+.mark{width:62px;height:62px;flex:none;border:1.5px solid var(--gold);border-radius:50%;display:grid;place-items:center;color:var(--gold);font-size:30px;background:rgba(255,255,255,.06)}
+.eyebrow{font-size:12px;letter-spacing:.17em;text-transform:uppercase;color:#d6e8e9;font-weight:800}
+h1{font-size:clamp(27px,4.8vw,43px);line-height:1.08;letter-spacing:.015em;margin:4px 0 7px}
+.hero p{margin:0;color:#e2eef0;max-width:720px}
+.hero-note{margin-top:20px;display:flex;gap:9px;align-items:center;color:#f5e6c7;font-size:14px;position:relative;z-index:1}
+.nav-wrap{background:white;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+nav{display:flex;gap:8px;overflow-x:auto;padding:12px 0;scrollbar-width:thin}
+nav button{white-space:nowrap;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--muted);padding:10px 14px;font-weight:750;font-size:14px}
+nav button:hover{background:var(--blue-soft);color:var(--navy)}
+nav button.active{background:var(--navy);color:white;box-shadow:0 4px 12px #173b5522}
+main{padding:26px 0 52px}
+.view{display:none;animation:fade .25s ease}.view.active{display:block}
+@keyframes fade{from{opacity:.45;transform:translateY(5px)}to{opacity:1;transform:none}}
+.section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin:4px 0 18px}
+.kicker{color:var(--teal);font-size:12px;font-weight:850;letter-spacing:.13em;text-transform:uppercase}
+h2{color:var(--navy);font-size:clamp(23px,3vw,30px);line-height:1.2;margin:4px 0 8px}
+h3{color:var(--navy);font-size:18px;line-height:1.3;margin:0 0 8px}
+p{margin:7px 0 12px}
+.muted{color:var(--muted)}
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin:14px 0}
+.card.soft{background:#f8fbfc;box-shadow:none}
+.card.teal{background:var(--teal-soft);border-color:#d1e9e4;box-shadow:none}
+.card.gold{background:#fff9ed;border-color:#f1e1bd;box-shadow:none}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.module-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:18px 0}
+.module-card{background:white;border:1px solid var(--line);border-radius:18px;padding:18px;min-height:185px;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.module-icon{font-size:28px;margin-bottom:10px}
+.module-card p{font-size:14px;color:var(--muted);margin:0 0 14px;flex:1}
+.module-card .btn{width:100%}
+.btn{border:1px solid var(--line);border-radius:12px;padding:10px 15px;background:white;color:var(--navy);font-weight:750;transition:.18s ease}
+.btn:hover{transform:translateY(-1px);border-color:#9eb8c3}
+.btn.primary{background:var(--navy);border-color:var(--navy);color:white}
+.btn.primary:hover{background:var(--navy2)}
+.btn.teal{background:var(--teal);border-color:var(--teal);color:white}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-row{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}
+.route{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin-top:18px}
+.route-step{padding:13px 12px;border-radius:15px;background:#f1f6f8;border:1px solid #e2ebee}
+.route-step b{display:block;color:var(--teal);font-size:24px;line-height:1.1;margin-bottom:6px}
+.route-step strong{display:block;color:var(--navy);font-size:13px}
+.route-step span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+.notice{display:flex;gap:12px;align-items:flex-start;background:#fff8e9;border:1px solid #f0dfb9;border-radius:16px;padding:15px 17px;color:#655438;margin:18px 0}
+.notice .symbol{font-size:21px}
+.progress-line{height:9px;border-radius:30px;background:#e8eef0;overflow:hidden}
+.progress-line span{height:100%;display:block;width:0;background:linear-gradient(90deg,var(--teal),#75b9a8);border-radius:30px;transition:width .3s}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:#f6f9fa;border:1px solid var(--line);border-radius:14px;padding:14px}
+.stat strong{display:block;color:var(--navy);font-size:25px;line-height:1.1}
+.stat span{font-size:12px;color:var(--muted)}
+.emotion-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.emotion-btn{border:1px solid var(--line);background:#fff;border-radius:15px;padding:13px 8px;text-align:center;color:var(--ink);min-height:112px}
+.emotion-btn:hover,.emotion-btn.selected{border-color:var(--teal);background:var(--teal-soft)}
+.emotion-btn .emoji{font-size:28px;display:block;margin-bottom:4px}
+.emotion-btn strong{font-size:13px}
+.detail-box{margin-top:15px;border:1px solid #d3e7e2;background:#f4faf8;border-radius:16px;padding:18px;min-height:120px}
+.pill{display:inline-block;background:#e9f2f4;color:var(--navy);padding:5px 10px;border-radius:99px;font-size:12px;font-weight:800}
+.prompt-question{font-weight:750;color:var(--navy);margin-top:12px}
+.reflection-prompt{background:white;border:1px dashed #b9cecf;padding:12px 14px;border-radius:12px;margin-top:10px;color:#45606d}
+.exercise-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.exercise{border:1px solid var(--line);background:white;border-radius:16px;padding:16px;text-align:left;min-height:145px}
+.exercise:hover,.exercise.selected{border-color:var(--teal);background:#f2faf8}
+.exercise .emoji{font-size:25px}
+.exercise strong{display:block;color:var(--navy);margin:7px 0 4px}
+.exercise small{color:var(--muted);line-height:1.4}
+.exercise-stage{margin-top:16px}
+.timer{font-size:38px;font-weight:850;color:var(--navy);font-variant-numeric:tabular-nums;margin:10px 0}
+.step-list{padding-left:21px}
+.step-list li{margin:7px 0}
+.scenario-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.choice-option{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:14px;border:1px solid var(--line);background:white;border-radius:14px;margin:9px 0;color:var(--ink)}
+.choice-option:hover{border-color:var(--teal);background:#f5fbfa}
+.choice-option.chosen{border-color:var(--teal);background:var(--teal-soft)}
+.choice-option:disabled{cursor:default;opacity:1}
+.option-no{width:28px;height:28px;display:grid;place-items:center;flex:none;border-radius:50%;background:var(--blue-soft);color:var(--navy);font-weight:800}
+.feedback{padding:15px 16px;border-radius:14px;margin-top:14px;background:#f5f8fa;border:1px solid var(--line)}
+.feedback.good{background:var(--teal-soft);border-color:#cce6df}
+.feedback.retry{background:#fff8eb;border-color:#f0dfb9}
+.field{margin:13px 0}
+label{display:block;color:var(--navy);font-weight:750;margin-bottom:6px}
+textarea,select,input[type=range]{width:100%}
+textarea,select{border:1px solid #cbd9de;border-radius:12px;padding:12px;background:white;color:var(--ink)}
+textarea{resize:vertical;min-height:92px}
+input[type=range]{accent-color:var(--teal)}
+.range-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}
+.summary{border:1px solid var(--line);border-radius:15px;padding:16px;background:#f8fbfc}
+.checkline{display:flex;align-items:center;gap:9px;margin:10px 0;color:var(--ink)}
+.checkline input{accent-color:var(--teal);width:18px;height:18px}
+footer{background:#eaf0f2;color:var(--muted);text-align:center;padding:22px;font-size:13px}
+.hidden{display:none!important}
+@media(max-width:850px){.module-grid{grid-template-columns:repeat(2,1fr)}.emotion-grid{grid-template-columns:repeat(3,1fr)}.exercise-list{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.shell{padding:0 15px}.hero{padding:25px 0 22px}.mark{width:50px;height:50px;font-size:24px}.card{padding:17px}.module-grid,.grid{grid-template-columns:1fr}.route{grid-template-columns:repeat(2,1fr)}.route-step:last-child{grid-column:span 2}.emotion-grid{grid-template-columns:repeat(2,1fr)}.exercise-list{grid-template-columns:1fr}.stat-row{grid-template-columns:repeat(3,1fr)}nav{gap:4px}nav button{padding:9px 11px;font-size:13px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="hero">
+ <div class="shell">
+  <div class="brand">
+   <div class="mark" aria-hidden="true">✧</div>
+   <div><div class="eyebrow">Цифровой тренажёр для подростков</div><h1>ЭМОЦИОНАЛЬНЫЙ НАВИГАТОР</h1><p>П.А.У.З.А. — мой маршрут к осознанному действию</p></div>
+  </div>
+  <div class="hero-note"><span aria-hidden="true">✦</span> Заметь. Пойми. Поддержи себя. Выбери следующий шаг.</div>
+ </div>
+</header>
+<div class="nav-wrap"><nav class="shell" aria-label="Разделы тренажёра">
+ <button class="active" data-view="home">Главная</button>
+ <button data-view="emotions">01 · Узнай эмоцию</button>
+ <button data-view="resources">02 · Найди ресурс</button>
+ <button data-view="decisions">03 · Выбери решение</button>
+ <button data-view="myprogress">04 · Мой прогресс</button>
+</nav></div>
+<main class="shell">
+<section id="home" class="view active">
+ <div class="card">
+  <div class="kicker">Твой личный маршрут</div><h2>Пять шагов «ПАУЗА»</h2>
+  <p class="muted">Эмоции не бывают неправильными. Важно научиться замечать их и выбирать безопасные действия.</p>
+  <div class="route">
+   <div class="route-step"><b>П</b><strong>Поймай сигнал</strong><span>Заметь состояние</span></div>
+   <div class="route-step"><b>А</b><strong>Определи эмоцию</strong><span>Назови чувство</span></div>
+   <div class="route-step"><b>У</b><strong>Узнай причину</strong><span>Подумай о потребности</span></div>
+   <div class="route-step"><b>З</b><strong>Заряди себя ресурсом</strong><span>Выбери опору</span></div>
+   <div class="route-step"><b>А</b><strong>Анализируй результат</strong><span>Заметь, что помогло</span></div>
+  </div>
+ </div>
+ <div class="section-head"><div><div class="kicker">Четыре модуля</div><h2>Выбери, с чего начать</h2><p class="muted">Проходи в своём темпе. Можно вернуться к любому разделу.</p></div></div>
+ <div class="module-grid">
+  <article class="module-card"><div class="module-icon">🎨</div><h3>01. Узнай эмоцию</h3><p>Карточки чувств, их возможные сигналы и вопросы для самонаблюдения.</p><button class="btn primary" data-go="emotions">Открыть модуль</button></article>
+  <article class="module-card"><div class="module-icon">🌿</div><h3>02. Найди ресурс</h3><p>Выбери короткое упражнение самоподдержки и пройди его шаг за шагом.</p><button class="btn primary" data-go="resources">Открыть модуль</button></article>
+  <article class="module-card"><div class="module-icon">🧭</div><h3>03. Выбери решение</h3><p>Разбери жизненные ситуации и потренируй конструктивные варианты действий.</p><button class="btn primary" data-go="decisions">Открыть модуль</button></article>
+  <article class="module-card"><div class="module-icon">🌱</div><h3>04. Мой прогресс</h3><p>Подведи личный итог: что попробовал(а), что оказалось полезным и что возьмёшь с собой.</p><button class="btn primary" data-go="myprogress">Открыть модуль</button></article>
+ </div>
+ <div class="card soft">
+  <div class="scenario-top"><div><h3>Твой маршрут сегодня</h3><p class="muted">Отмечай выполненные шаги — индикатор обновляется автоматически.</p></div><strong id="homePercent" style="font-size:25px;color:var(--teal)">0%</strong></div>
+  <div class="progress-line"><span id="homeBar"></span></div>
+  <p class="muted" id="homeStatus" style="font-size:13px">Пока не отмечено ни одного шага.</p>
+ </div>
+ <div class="notice"><span class="symbol">💛</span><div><strong>Важно помнить.</strong> Тренажёр предназначен для обучения эмоциональной грамотности и самоподдержке. Это не психологический тест, не диагностика и не лечение. Если тебе страшно, небезопасно или трудно справляться самостоятельно, обратись к доверенному взрослому или школьному психологу. При непосредственной опасности попроси взрослого немедленно помочь.</div></div>
+</section>
+
+<section id="emotions" class="view">
+ <div class="section-head"><div><div class="kicker">Модуль 01 · П</div><h2>Узнай эмоцию</h2><p class="muted">Выбери карточку. Посмотри, какие сигналы могут сопровождать чувство, и ответь себе на вопрос. Одинаковая ситуация у разных людей может вызывать разные эмоции.</p></div><span class="pill" id="emotionCount">0 / 10 карточек</span></div>
+ <div class="card">
+  <div class="emotion-grid" id="emotionGrid"></div>
+  <div class="detail-box" id="emotionDetail" aria-live="polite"><strong>Начни с любой карточки.</strong><p class="muted">Здесь появится описание эмоции и вопрос для размышления.</p></div>
+  <div class="btn-row"><button class="btn primary" id="emotionDone" disabled>Я познакомился(ась) с эмоциями</button><button class="btn ghost" id="emotionReset">Сбросить выбор</button></div>
+ </div>
+ <div class="card soft"><h3>Мини-практика «Что я замечаю?»</h3><p>Попробуй закончить фразу про себя. Необязательно записывать ответ.</p><div class="reflection-prompt">«Сейчас я могу чувствовать __________. Я замечаю это по __________. Возможно, мне важно __________».</div></div>
+</section>
+
+<section id="resources" class="view">
+ <div class="section-head"><div><div class="kicker">Модуль 02 · З</div><h2>Найди ресурс</h2><p class="muted">Выбери то, что подходит именно сейчас. Не каждое упражнение подходит всем — остановись, если становится некомфортно.</p></div><span class="pill" id="resourceCount">0 / 6 упражнений</span></div>
+ <div class="card">
+  <div class="exercise-list" id="exerciseList"></div>
+  <div class="detail-box exercise-stage" id="exerciseStage" aria-live="polite"><strong>Выбери упражнение.</strong><p class="muted">Ты увидишь короткую инструкцию и сможешь отметить, помогло ли оно тебе.</p></div>
+ </div>
+ <div class="notice"><span class="symbol">🌿</span><div><strong>Твой комфорт важнее выполнения задания.</strong> Дыши естественно, не задерживай дыхание и не заставляй себя закрывать глаза. Можно просто выбрать другое упражнение или обратиться за поддержкой.</div></div>
+</section>
+
+<section id="decisions" class="view">
+ <div class="section-head"><div><div class="kicker">Модуль 03 · У</div><h2>Выбери решение</h2><p class="muted">Прочитай ситуацию и выбери наиболее безопасный и конструктивный следующий шаг. Здесь мы учимся рассуждать, а не ставим оценки.</p></div><span class="pill" id="scenarioCounter">Ситуация 1 / 5</span></div>
+ <div class="card">
+  <div class="scenario-top"><span class="pill">Тренировка жизненных навыков</span><span class="muted" id="scenarioScore">Разобрано: 0 из 5</span></div>
+  <div id="scenarioContent"></div>
+  <div id="scenarioFeedback" class="feedback" aria-live="polite">Выбери вариант ответа, чтобы увидеть пояснение.</div>
+  <div class="btn-row"><button class="btn primary" id="nextScenario" disabled>Следующая ситуация →</button><button class="btn ghost" id="restartScenarios">Начать сначала</button></div>
+ </div>
+ <div class="card soft"><h3>Подумай шире</h3><p class="muted">В реальной жизни могут существовать разные подходящие решения. Если ситуация связана с травлей, угрозами или опасностью, не оставайся один на один с проблемой — обратись к надёжному взрослому.</p></div>
+</section>
+
+<section id="myprogress" class="view">
+ <div class="section-head"><div><div class="kicker">Модуль 04 · А</div><h2>Мой прогресс</h2><p class="muted">Подведи итог своей практики. Здесь нет отметок и сравнения с другими.</p></div></div>
+ <div class="card">
+  <h3>Мои шаги</h3>
+  <div class="stat-row">
+   <div class="stat"><strong id="statEmotion">0/10</strong><span>карточек изучено</span></div>
+   <div class="stat"><strong id="statResource">0/6</strong><span>упражнений попробовано</span></div>
+   <div class="stat"><strong id="statScenario">0/5</strong><span>ситуаций разобрано</span></div>
+  </div>
+  <div style="margin-top:17px"><div class="scenario-top"><strong>Общий маршрут</strong><strong id="progressPercent" style="color:var(--teal)">0%</strong></div><div class="progress-line"><span id="progressBar"></span></div></div>
+ </div>
+ <div class="card">
+  <h3>Личная рефлексия</h3>
+  <div class="field"><label for="skill">Сегодня я потренировал(а):</label><select id="skill"><option value="распознавать эмоции">Распознавать эмоции</option><option value="замечать причины переживаний">Замечать причины переживаний</option><option value="выбирать способ самоподдержки">Выбирать способ самоподдержки</option><option value="решать ситуацию без конфликта">Решать ситуацию без конфликта</option><option value="понимать, когда нужна помощь">Понимать, когда нужна помощь</option></select></div>
+  <div class="field"><label for="reflection">Что я хочу запомнить?</label><textarea id="reflection" maxlength="500" placeholder="Например: сначала сделать паузу, назвать эмоцию и только потом отвечать..."></textarea></div>
+  <div class="field"><label for="confidence">Насколько уверенно я смогу применить этот навык?</label><input id="confidence" type="range" min="1" max="5" value="3"><div class="range-meta"><span>Пока не уверен(а)</span><strong id="confidenceValue">3 из 5</strong><span>Уверенно</span></div></div>
+  <label class="checkline"><input type="checkbox" id="supportPlan"> Я знаю, к кому могу обратиться за поддержкой.</label>
+  <div class="btn-row"><button class="btn primary" id="finishReflection">Завершить рефлексию</button><button class="btn" id="printSummary">Распечатать мой итог</button><button class="btn ghost" id="clearProgress">Сбросить данные этой сессии</button></div>
+  <div class="detail-box hidden" id="reflectionResult" aria-live="polite"></div>
+ </div>
+ <div class="notice"><span class="symbol">🔒</span><div><strong>Конфиденциальность.</strong> Ответы не отправляются в интернет и не сохраняются на сервере. Данные прогресса и текст рефлексии существуют только в текущем открытом окне. Не указывай здесь имя, фамилию, класс, адрес или другие личные сведения.</div></div>
+</section>
+</main>
+<footer><div class="shell">Авторская образовательная разработка «Эмоциональный навигатор: ПАУЗА» · Автономная версия, работает без подключения к интернету</div></footer>
+<script>
+"use strict";
+const emotions=[
+ {name:"Радость",emoji:"☀️",signal:"Может ощущаться как лёгкость, улыбка, желание делиться хорошими новостями или активность. У каждого человека проявления индивидуальны.",need:"Что именно принесло мне радость? Как я могу сохранить это приятное воспоминание?"},
+ {name:"Тревога",emoji:"🌧️",signal:"Иногда проявляется как напряжение, учащённое сердцебиение, беспокойные мысли или желание всё контролировать. Эти признаки могут отличаться у разных людей.",need:"Что сейчас вызывает неопределённость? Какая информация, пауза или поддержка могли бы помочь?"},
+ {name:"Злость",emoji:"🔥",signal:"Может сопровождаться напряжением мышц, жаром, резким желанием возразить. Иногда она подсказывает, что границы или ожидания задеты.",need:"Что для меня важно в этой ситуации? Как выразить недовольство безопасно и уважительно?"},
+ {name:"Обида",emoji:"💧",signal:"Может появиться после слов или поступков, которые задели. Иногда хочется замолчать, отдалиться или снова и снова прокручивать разговор.",need:"Что именно меня задело? Что мне хотелось бы объяснить или попросить?"},
+ {name:"Разочарование",emoji:"☁️",signal:"Может возникнуть, когда результат не совпал с ожиданиями. Иногда появляется грусть, усталость или желание отказаться от попыток.",need:"Чему меня научила эта ситуация? Какой небольшой следующий шаг я могу сделать?"},
+ {name:"Растерянность",emoji:"🌫️",signal:"Может ощущаться как непонимание, с чего начать, трудность выбора или множество вопросов одновременно.",need:"Какой информации мне не хватает? У кого можно попросить объяснение или помощь?"},
+ {name:"Спокойствие",emoji:"🌿",signal:"Может ощущаться как ровное дыхание, ясность мыслей и возможность сосредоточиться. Спокойствие не обязательно означает отсутствие проблем.",need:"Что помогает мне чувствовать опору? Как я могу поддерживать это состояние?"},
+ {name:"Усталость",emoji:"🌙",signal:"Иногда проявляется как снижение энергии, рассеянность, раздражительность или желание отдохнуть. Это может быть сигналом о потребности в восстановлении.",need:"Что сейчас посильно: короткая пауза, вода, отдых или просьба о помощи?"},
+ {name:"Интерес",emoji:"🔎",signal:"Может проявляться как любопытство, внимание, желание задавать вопросы, пробовать и исследовать новое.",need:"Что я хочу узнать или попробовать? Как сделать первый небольшой шаг?"},
+ {name:"Одиночество",emoji:"🫶",signal:"Может появляться, когда не хватает общения, принятия или ощущения связи с другими. Это чувство может возникнуть даже среди людей.",need:"С кем я чувствую себя в безопасности? К кому могу обратиться или предложить провести время вместе?"}
+];
+const exercises=[
+ {name:"Мягкий выдох",emoji:"🌬️",desc:"Спокойная пауза без задержки дыхания.",steps:["Устройся удобно и почувствуй опору под ногами.","Сделай обычный, комфортный вдох.","Мягко выдохни чуть медленнее, только если это удобно.","Повтори 3–4 раза или вернись к естественному дыханию."],duration:35,kind:"timer"},
+ {name:"Заземление 5–4–3",emoji:"🌳",desc:"Переключи внимание на то, что рядом.",steps:["Найди глазами 5 предметов вокруг.","Заметь 4 ощущения тела: например, стопы на полу или спину на стуле.","Прислушайся к 3 звукам вокруг.","Назови про себя один предмет, который помогает почувствовать опору."],duration:60,kind:"steps"},
+ {name:"Пауза и вода",emoji:"💧",desc:"Небольшая остановка и забота о себе.",steps:["Если возможно, остановись на минуту.","Удобно сядь или встань, расслабь плечи.","Выпей немного воды, если она рядом.","Спроси себя: какой следующий небольшой шаг мне сейчас по силам?"],duration:45,kind:"steps"},
+ {name:"Поддерживающая фраза",emoji:"💬",desc:"Найди слова, которые помогают не ругать себя.",steps:["Заметь, что сейчас тебе непросто.","Попробуй сказать себе: «Мне сейчас непросто, но я могу сделать один небольшой шаг».","Подбери собственную фразу, которая звучит искренне.","Повтори её про себя и выбери один посильный шаг."],duration:45,kind:"steps"},
+ {name:"Комфортное движение",emoji:"🚶",desc:"Мягко верни внимание к телу.",steps:["Убедись, что вокруг достаточно места и движение безопасно.","Немного пройдись или мягко потянись.","Расслабь плечи и кисти, не делая движений через силу.","Остановись и отметь, как ты себя чувствуешь."],duration:45,kind:"steps"},
+ {name:"Обращение за поддержкой",emoji:"🤝",desc:"Подготовь простой способ попросить о помощи.",steps:["Вспомни взрослого, которому доверяешь.","Подумай, где и когда можно спокойно поговорить.","Можно начать так: «Мне нужно поговорить. Помоги мне, пожалуйста».","Если первый человек не смог помочь, обратись к другому надёжному взрослому."],duration:60,kind:"steps"}
+];
+const scenarios=[
+ {q:"Ты готовился(ась) к ответу, но получил(а) замечание перед классом. Что можно сделать?",a:["Ответить оскорблением.","Сделать паузу, уточнить замечание и обсудить его спокойно после урока.","Решить, что больше никогда не будешь отвечать."],good:1,why:"Пауза и спокойное уточнение помогают защитить свои границы и понять, что именно нужно исправить.",tip:"Можно сказать: «Я хочу понять, что именно мне нужно улучшить»."},
+ {q:"В групповом чате одноклассники пишут о тебе неприятные слова. Какой шаг безопаснее?",a:["Начать публичную перепалку.","Сохранить сообщения, не отвечать агрессией и обратиться к доверенному взрослому.","Решить, что нужно справиться в одиночку."],good:1,why:"Сохранение сообщений и обращение за поддержкой помогают взрослым разобраться. Не нужно оставаться с травлей один на один.",tip:"Если есть угрозы или опасность, важно как можно скорее сообщить взрослому."},
+ {q:"Перед контрольной ты чувствуешь сильное волнение. Что может помочь?",a:["Назвать своё чувство, сделать комфортную паузу и начать с первого знакомого задания.","Упрекать себя за волнение.","Отказаться от любой помощи."],good:0,why:"Признание эмоции и небольшой понятный шаг могут вернуть ощущение управляемости.",tip:"Можно начать с задания, которое кажется наиболее понятным."},
+ {q:"Друг не ответил на сообщение, и ты расстроился(ась). Что можно сделать?",a:["Сразу обвинить его.","Предположить разные причины и позже спокойно спросить, всё ли в порядке.","Отправить много гневных сообщений."],good:1,why:"Проверка предположений и спокойный разговор уменьшают риск недопонимания.",tip:"Не всегда отсутствие ответа означает плохое отношение."},
+ {q:"Ты видишь, что одноклассника унижают. Как поступить?",a:["Поддержать насмешки.","Если безопасно, поддержать пострадавшего и сообщить взрослому.","Снимать происходящее ради развлечения."],good:1,why:"Безопасная поддержка и обращение к взрослому важнее попытки самостоятельно остановить опасную ситуацию.",tip:"Не подвергай себя опасности. Помощь взрослого — важный и ответственный шаг."}
+];
+const state={emotionSeen:new Set(),resourceTried:new Set(),scenarioDone:new Set(),scenarioIndex:0,scenarioAnswered:false,exerciseIndex:null,timer:null,timerLeft:0,reflectionDone:false};
+const $=id=>document.getElementById(id);
+function go(view){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===view));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===view));window.scrollTo({top:0,behavior:"smooth"});updateProgress();}
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>go(b.dataset.view)));
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));
+
+function renderEmotions(){
+ const grid=$("emotionGrid");grid.innerHTML="";
+ emotions.forEach((e,i)=>{const b=document.createElement("button");b.className="emotion-btn";b.type="button";b.setAttribute("aria-label","Открыть карточку: "+e.name);b.innerHTML=`<span class="emoji">${e.emoji}</span><strong>${e.name}</strong>`;b.addEventListener("click",()=>selectEmotion(i,b));grid.appendChild(b);});
+}
+function selectEmotion(i,button){
+ document.querySelectorAll(".emotion-btn").forEach(b=>b.classList.remove("selected"));button.classList.add("selected");
+ const e=emotions[i];state.emotionSeen.add(i);
+ $("emotionDetail").innerHTML=`<span class="pill">Карточка эмоции</span><h3 style="margin-top:10px">${e.emoji} ${e.name}</h3><p>${e.signal}</p><div class="prompt-question">Вопрос для размышления</div><div class="reflection-prompt">${e.need}</div><p class="muted" style="font-size:13px;margin-top:12px">Это возможные примеры, а не обязательные признаки. Только ты можешь лучше понять, что чувствуешь.</p>`;
+ $("emotionCount").textContent=state.emotionSeen.size+" / 10 карточек";updateProgress();
+}
+$("emotionDone").addEventListener("click",()=>{state.emotionDone=true;$("emotionDetail").insertAdjacentHTML("beforeend",'<p><strong>✓ Шаг отмечен.</strong> Ты познакомился(ась) с карточками эмоций.</p>');updateProgress();});
+$("emotionReset").addEventListener("click",()=>{state.emotionSeen.clear();state.emotionDone=false;document.querySelectorAll(".emotion-btn").forEach(b=>b.classList.remove("selected"));$("emotionDetail").innerHTML="<strong>Выбор сброшен.</strong><p class=\"muted\">Выбери карточку, чтобы продолжить.</p>";$("emotionCount").textContent="0 / 10 карточек";updateProgress();});
+
+function renderExercises(){
+ const list=$("exerciseList");list.innerHTML="";
+ exercises.forEach((e,i)=>{const b=document.createElement("button");b.type="button";b.className="exercise";b.innerHTML=`<span class="emoji">${e.emoji}</span><strong>${e.name}</strong><small>${e.desc}</small>`;b.addEventListener("click",()=>openExercise(i,b));list.appendChild(b);});
+}
+function openExercise(i,button){
+ stopTimer();state.exerciseIndex=i;document.querySelectorAll(".exercise").forEach(b=>b.classList.remove("selected"));button.classList.add("selected");
+ const e=exercises[i],steps=e.steps.map(s=>`<li>${s}</li>`).join("");
+ $("exerciseStage").innerHTML=`<span class="pill">Практика · ${e.duration} сек. ориентировочно</span><h3 style="margin-top:10px">${e.emoji} ${e.name}</h3><p>${e.desc}</p><ol class="step-list">${steps}</ol><div class="timer" id="exerciseTimer" aria-live="polite">${formatTime(e.duration)}</div><p class="muted" id="timerHint">Нажми «Начать практику», когда будешь готов(а). Можно выполнять в своём темпе.</p><div class="btn-row"><button class="btn primary" id="startTimer">Начать практику</button><button class="btn" id="finishExercise">Я попробовал(а) это упражнение</button></div><div class="feedback hidden" id="exerciseFeedback"></div>`;
+ $("startTimer").addEventListener("click",startTimer);$("finishExercise").addEventListener("click",()=>finishExercise(i));
+}
+function formatTime(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function startTimer(){
+ stopTimer();const e=exercises[state.exerciseIndex];state.timerLeft=e.duration;$("exerciseTimer").textContent=formatTime(state.timerLeft);$("timerHint").textContent="Иди в комфортном темпе. Таймер — только ориентир.";
+ $("startTimer").disabled=true;
+ state.timer=setInterval(()=>{state.timerLeft--;if($("exerciseTimer"))$("exerciseTimer").textContent=formatTime(Math.max(0,state.timerLeft));if(state.timerLeft<=0){stopTimer();if($("timerHint"))$("timerHint").textContent="Время-подсказка завершилось. Можно закончить раньше или продолжить самостоятельно.";if($("startTimer"))$("startTimer").disabled=false;}},1000);
+}
+function stopTimer(){if(state.timer){clearInterval(state.timer);state.timer=null;}}
+function finishExercise(i){
+ stopTimer();state.resourceTried.add(i);$("resourceCount").textContent=state.resourceTried.size+" / 6 упражнений";
+ const f=$("exerciseFeedback");f.className="feedback good";f.innerHTML="<strong>Шаг отмечен ✓</strong><p>Спасибо, что попробовал(а) этот способ. Отметь для себя: стало ли немного спокойнее, понятнее или комфортнее? Если нет — это тоже нормально, можно подобрать другой ресурс.</p>";f.classList.remove("hidden");updateProgress();
+}
+
+function renderScenario(){
+ const s=scenarios[state.scenarioIndex];state.scenarioAnswered=false;
+ $("scenarioCounter").textContent=`Ситуация ${state.scenarioIndex+1} / ${scenarios.length}`;
+ $("scenarioContent").innerHTML=`<h3 style="margin-top:18px">${s.q}</h3><div id="answerOptions"></div>`;
+ const opts=$("answerOptions");
+ s.a.forEach((a,i)=>{const b=document.createElement("button");b.className="choice-option";b.type="button";b.innerHTML=`<span class="option-no">${i+1}</span><span>${a}</span>`;b.addEventListener("click",()=>answerScenario(i));opts.appendChild(b);});
+ $("scenarioFeedback").className="feedback";$("scenarioFeedback").textContent="Выбери вариант ответа, чтобы увидеть пояснение.";
+ $("nextScenario").disabled=true;$("nextScenario").textContent=state.scenarioIndex===scenarios.length-1?"Завершить разбор":"Следующая ситуация →";
+ $("scenarioScore").textContent=`Разобрано: ${state.scenarioDone.size} из 5`;
+}
+function answerScenario(i){
+ if(state.scenarioAnswered)return;state.scenarioAnswered=true;const s=scenarios[state.scenarioIndex];state.scenarioDone.add(state.scenarioIndex);
+ document.querySelectorAll(".choice-option").forEach((b,j)=>{b.disabled=true;if(j===i)b.classList.add("chosen");});
+ const f=$("scenarioFeedback");f.className="feedback "+(i===s.good?"good":"retry");
+ f.innerHTML=`<strong>${i===s.good?"Хороший выбор!":"Давай разберём ситуацию."}</strong><p>${s.why}</p><p><strong>Можно попробовать так:</strong> ${s.tip}</p>`;
+ $("nextScenario").disabled=false;$("scenarioScore").textContent=`Разобрано: ${state.scenarioDone.size} из 5`;updateProgress();
+}
+$("nextScenario").addEventListener("click",()=>{if(state.scenarioIndex<scenarios.length-1){state.scenarioIndex++;renderScenario();}else{const f=$("scenarioFeedback");f.className="feedback good";f.innerHTML="<strong>Ты разобрал(а) все ситуации!</strong><p>Вспомни: в сложных или опасных ситуациях можно и нужно обращаться за помощью к доверенному взрослому.</p>";$("nextScenario").disabled=true;$("nextScenario").textContent="Все ситуации пройдены";}});
+$("restartScenarios").addEventListener("click",()=>{state.scenarioIndex=0;state.scenarioDone.clear();renderScenario();updateProgress();});
+
+$("confidence").addEventListener("input",e=>$("confidenceValue").textContent=e.target.value+" из 5");
+$("finishReflection").addEventListener("click",()=>{
+ state.reflectionDone=true;const skill=$("skill").value,confidence=$("confidence").value,support=$("supportPlan").checked;
+ const reflection=$("reflection").value.trim();
+ $("reflectionResult").classList.remove("hidden");
+ $("reflectionResult").innerHTML=`<span class="pill">Мой итог</span><h3 style="margin-top:10px">Спасибо за внимание к себе 🌱</h3><p>Сегодня я потренировал(а): <strong>${escapeHTML(skill)}</strong>.</p><p>Моя уверенность: <strong>${confidence} из 5</strong>.</p><p>${support?"Я знаю, к кому обратиться за поддержкой.":"Я могу подумать, к какому надёжному взрослому обратиться за поддержкой."}</p>${reflection?`<div class="reflection-prompt">${escapeHTML(reflection)}</div>`:""}<p class="muted" style="font-size:13px">Это твоя личная рефлексия, а не психологическая оценка.</p>`;
+ updateProgress();
+});
+$("printSummary").addEventListener("click",()=>{updateProgress();window.print();});
+$("clearProgress").addEventListener("click",()=>{
+ if(!confirm("Сбросить все отметки и текст рефлексии в этом окне?"))return;
+ state.emotionSeen.clear();state.resourceTried.clear();state.scenarioDone.clear();state.scenarioIndex=0;state.reflectionDone=false;state.emotionDone=false;stopTimer();
+ $("reflection").value="";$("confidence").value=3;$("confidenceValue").textContent="3 из 5";$("supportPlan").checked=false;
+ $("reflectionResult").classList.add("hidden");$("emotionCount").textContent="0 / 10 карточек";$("resourceCount").textContent="0 / 6 упражнений";
+ $("emotionDetail").innerHTML="<strong>Начни с любой карточки.</strong><p class=\"muted\">Здесь появится описание эмоции и вопрос для размышления.</p>";
+ $("exerciseStage").innerHTML="<strong>Выбери упражнение.</strong><p class=\"muted\">Ты увидишь короткую инструкцию и сможешь отметить, помогло ли оно тебе.</p>";
+ document.querySelectorAll(".emotion-btn,.exercise").forEach(b=>b.classList.remove("selected"));renderScenario();updateProgress();go("myprogress");
+});
+function escapeHTML(str){return str.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function updateProgress(){
+ const done=(state.emotionDone?1:0)+(state.resourceTried.size>0?1:0)+(state.scenarioDone.size>0?1:0)+(state.reflectionDone?1:0);
+ const pct=Math.round(done/4*100);
+ $("homePercent").textContent=pct+"%";$("homeBar").style.width=pct+"%";$("progressPercent").textContent=pct+"%";$("progressBar").style.width=pct+"%";
+ $("homeStatus").textContent=done===0?"Пока не отмечено ни одного шага.":`Отмечено модулей: ${done} из 4. Продолжай в своём темпе.`;
+ $("statEmotion").textContent=state.emotionSeen.size+"/10";$("statResource").textContent=state.resourceTried.size+"/6";$("statScenario").textContent=state.scenarioDone.size+"/5";
+}
+renderEmotions();renderExercises();renderScenario();updateProgress();
+</script>
+<style>
+@media print{
+ body{background:white}.hero{background:#173b55!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .nav-wrap,button,.notice{display:none!important}.view{display:none!important}#myprogress{display:block!important}
+ .card{box-shadow:none;break-inside:avoid}.shell{max-width:none;padding:0}
+}
+</style>
+</body>
+</html>
